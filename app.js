@@ -192,6 +192,9 @@ app.get("/viewfull/:id", async (req, res) => {
           window.__PRELOADED_STATE__ = ${JSON.stringify(post)};
         </script>
         <script src="/static/js/main.js"></script>
+           <script>
+                window.location.href = "${pageUrl}";
+            </script>
       </body>
     </html>
   `;
