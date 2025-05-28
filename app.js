@@ -35,8 +35,6 @@ const corsOptions = {
     "http://localhost:5173",
     "http://localhost:4173",
     "https://news-app-cyan-ten.vercel.app",
-    "https://news-app-backend-production.up.railway.app",
-    "https://moody-taxes-beg.loca.lt",
   ],
   credentials: true,
 };
@@ -132,7 +130,7 @@ app.get("/viewfull/:id", async (req, res) => {
   try {
     // const { id } = req.params;
 
-     const { id } = req.params; // ✅ This line is missing in your code
+    const { id } = req.params; // ✅ This line is missing in your code
     // ✅ Use your backend API, not CLIENT_URL
     const apiResponse = await axios.get(
       `${"https://news-app-backend-production.up.railway.app"}/api/v1/posts/${"6836ee28071f223f25d6331c"}`
@@ -144,10 +142,10 @@ app.get("/viewfull/:id", async (req, res) => {
       return res.status(404).send("Post not found");
     }
 
-    const post = apiResponse.data.post;
-    const title = escapeHTML(post.title || "Untitled Post");
+    const post = apiResponse?.data?.post;
+    const title = escapeHTML(post?.title || "Untitled Post");
     const description = escapeHTML(
-      post.description || "Read this article on Dehaat News."
+      post?.description || "Read this article on Dehaat News."
     );
     const rawImageUrl =
       post.imageUrl ||
@@ -156,28 +154,49 @@ app.get("/viewfull/:id", async (req, res) => {
     const imageUrl = escapeHTML(rawImageUrl);
     const pageUrl = `https://news-app-cyan-ten.vercel.app/viewfull/${id}`;
 
-    const indexPath = path.join(process.cwd(), "dist", "index.html");
-    fs.readFile(indexPath, "utf8", (err, htmlData) => {
-      if (err) {
-        console.error("Error reading index.html:", err);
-        return res.status(500).send("Internal Server Error");
-      }
+    // const indexPath = path.join(process.cwd(), "dist", "index.html");
+    // fs.readFile(indexPath, "utf8", (err, htmlData) => {
+    //   if (err) {
+    //     console.error("Error reading index.html:", err);
+    //     return res.status(500).send("Internal Server Error");
+    //   }
 
-      // ✅ Replace placeholders
-      let modifiedHtml = htmlData
-        .replace(/__META_TITLE__/g, title)
-        .replace(/__META_DESCRIPTION__/g, description)
-        .replace(/__META_IMAGE__/g, imageUrl)
-        .replace(/__META_URL__/g, pageUrl);
+    //   // ✅ Replace placeholders
+    //   let modifiedHtml = htmlData
+    //     .replace(/__META_TITLE__/g, title)
+    //     .replace(/__META_DESCRIPTION__/g, description)
+    //     .replace(/__META_IMAGE__/g, imageUrl)
+    //     .replace(/__META_URL__/g, pageUrl);
 
-      // ✅ Optional: Redirect to full article after showing preview
-      modifiedHtml = modifiedHtml.replace(
-        "</head>",
-        `<meta http-equiv="refresh" content="2;url=https://news-app-cyan-ten.vercel.app/news/${id}" />\n</head>`
-      );
+    //   // ✅ Optional: Redirect to full article after showing preview
+    //   modifiedHtml = modifiedHtml.replace(
+    //     "</head>",
+    //     `<meta http-equiv="refresh" content="2;url=https://news-app-cyan-ten.vercel.app/news/${id}" />\n</head>`
+    //   );
 
-      res.send(modifiedHtml);
-    });
+    //   res.send(modifiedHtml);
+    // });
+
+    const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>${title}</title>
+        <meta name="description" content="${description}" />
+        <meta property="og:image" content="${imageUrl}" />
+        <!-- other meta tags -->
+      </head>
+      <body>
+        <div id="root"></div>
+        <script>
+          window.__PRELOADED_STATE__ = ${JSON.stringify(post)};
+        </script>
+        <script src="/static/js/main.js"></script>
+      </body>
+    </html>
+  `;
+
+    res.send(html);
   } catch (error) {
     console.error("Error in /viewfull/:id:", error.message);
     res.status(500).send("Server Error");
