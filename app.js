@@ -134,10 +134,10 @@ app.get("/viewfull/:id", async (req, res) => {
 
     // ✅ Use your backend API, not CLIENT_URL
     const apiResponse = await axios.get(
-      `${'https://news-app-backend-production.up.railway.app'}/api/v1/posts/${'6836ee28071f223f25d6331c'}`
+      `${"https://news-app-backend-production.up.railway.app"}/api/v1/posts/${"6836ee28071f223f25d6331c"}`
     );
 
-    console.log({apiResponse})
+    console.log({ apiResponse });
 
     if (!apiResponse.data.success) {
       return res.status(404).send("Post not found");
@@ -153,8 +153,8 @@ app.get("/viewfull/:id", async (req, res) => {
       post.photos?.[0]?.url ||
       "https://news-app-cyan-ten.vercel.app/dehaatnews.png";
     const imageUrl = escapeHTML(rawImageUrl);
+    const pageUrl = `https://news-app-cyan-ten.vercel.app/viewfull/${id}`;
 
-    // ✅ Read original index.html (DO NOT mutate it)
     const indexPath = path.join(process.cwd(), "dist", "index.html");
     fs.readFile(indexPath, "utf8", (err, htmlData) => {
       if (err) {
@@ -162,27 +162,17 @@ app.get("/viewfull/:id", async (req, res) => {
         return res.status(500).send("Internal Server Error");
       }
 
-      // ✅ Inject dynamic OG meta tags
-      const modifiedHtml = htmlData.replace(
+      // ✅ Replace placeholders
+      let modifiedHtml = htmlData
+        .replace(/__META_TITLE__/g, title)
+        .replace(/__META_DESCRIPTION__/g, description)
+        .replace(/__META_IMAGE__/g, imageUrl)
+        .replace(/__META_URL__/g, pageUrl);
+
+      // ✅ Optional: Redirect to full article after showing preview
+      modifiedHtml = modifiedHtml.replace(
         "</head>",
-        `
-                <!-- Injected OG Meta Tags -->
-                <meta property="og:title" content="${title}" />
-                <meta property="og:description" content="${description}" />
-                <meta property="og:image" content="${imageUrl}" />
-                <meta property="og:image:secure_url" content="${imageUrl}" />
-                <meta property="og:image:width" content="1200" />
-                <meta property="og:image:height" content="630" />
-                <meta property="og:type" content="article" />
-                <meta property="og:url" content="https://news-app-cyan-ten.vercel.app/viewfull/${id}" />
-
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content="${title}" />
-                <meta name="twitter:description" content="${description}" />
-                <meta name="twitter:image" content="${imageUrl}" />
-
-                <meta http-equiv="refresh" content="2;url=https://news-app-cyan-ten.vercel.app/news/${id}" />
-                </head>`
+        `<meta http-equiv="refresh" content="2;url=https://news-app-cyan-ten.vercel.app/news/${id}" />\n</head>`
       );
 
       res.send(modifiedHtml);
