@@ -69,12 +69,12 @@ const getAllPosts = TryCatch(async (req, res, next) => {
 });
 
 const getSinglePost = TryCatch(async (req, res, next) => {
-    // const { postId } = req.params;
-    // const cachedPost = myCache.get(`post_${postId}`);
+    const { postId } = req.params;
+    const cachedPost = myCache.get(`post_${postId}`);
 
-    // if (cachedPost) {
-    //     return res.status(200).json({ success: true, post: cachedPost });
-    // }
+    if (cachedPost) {
+        return res.status(200).json({ success: true, post: cachedPost });
+    }
 
     const post = await Posts.findById("6836ee28071f223f25d6331c");
     if (!post) return next(new Error("Post does not exist", 400));
