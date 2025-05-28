@@ -35,7 +35,7 @@ const corsOptions = {
     "http://localhost:5173",
     "http://localhost:4173",
     "https://news-app-cyan-ten.vercel.app",
-    "https://mallard-bold-factually.ngrok-free.app",
+    "https://news-app-backend-production.up.railway.app",
     "https://moody-taxes-beg.loca.lt",
   ],
   credentials: true,
@@ -58,140 +58,140 @@ app.get("/", (req, res) => {
 // });
 
 // 🔹 Open Graph Meta Route for Social Sharing
-app.get("/viewfull/:id", async (req, res) => {
-  try {
-    const id = "6836ee28071f223f25d6331c";
-    // const { id } = req.params;
-
-    const apiResponse = await axios.get(
-      `${"https://moody-taxes-beg.loca.lt"}/api/v1/posts/${"6836ee28071f223f25d6331c"}`
-      //   {
-      //     headers: {
-      //       "ngrok-skip-browser-warning": "true",
-      //     },
-      //   }
-    );
-
-    if (!apiResponse.data.success) {
-      return res.status(404).send("Article not found");
-    }
-
-    const post = apiResponse?.data?.post;
-
-    // Fallbacks + escape to avoid HTML breakage
-    const title = escapeHTML(post?.title || "Untitled Post");
-    const description = escapeHTML(
-      post.description || "Read this article on Dehaat News."
-    );
-    const imageUrl =
-      post.imageUrl ||
-      post.photos?.[0]?.url ||
-      "https://news-app-cyan-ten.vercel.app/dehaatnews.png"; // your fallback image
-
-    const ogMetaTags = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${title} - Dehaat News</title>
-
-            <!-- Open Graph Tags -->
-            <meta property="og:title" content="${title}" />
-            <meta property="og:description" content="${description}" />
-            <meta property="og:image" content="${imageUrl}" />
-            <meta property="og:image:secure_url" content="${imageUrl}" />
-            <meta property="og:image:width" content="1200" />
-            <meta property="og:image:height" content="630" />
-            <meta property="og:type" content="article" />
-            <meta property="og:url" content="https://news-app-cyan-ten.vercel.app/viewfull/${id}" />
-
-            <!-- Twitter -->
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content="${title}" />
-            <meta name="twitter:description" content="${description}" />
-            <meta name="twitter:image" content="${imageUrl}" />
-
-            <!-- Redirect to frontend after preview -->
-            <script>
-                window.location.href = "https://news-app-cyan-ten.vercel.app/news/${id}";
-            </script>
-        </head>
-        <body></body>
-        </html>
-        `;
-
-    res.send(ogMetaTags);
-  } catch (error) {
-    console.error("Error in /viewfull/:id:", error.message);
-    res.status(500).send("Server Error");
-  }
-});
-
 // app.get("/viewfull/:id", async (req, res) => {
 //   try {
+//     const id = "6836ee28071f223f25d6331c";
 //     // const { id } = req.params;
 
-//     // ✅ Use your backend API, not CLIENT_URL
 //     const apiResponse = await axios.get(
-//       `${' https://9321-101-53-235-200.ngrok-free.app'}/api/v1/posts/${'6836ee28071f223f25d6331c'}`
+//       `${"https://moody-taxes-beg.loca.lt"}/api/v1/posts/${"6836ee28071f223f25d6331c"}`
+//       //   {
+//       //     headers: {
+//       //       "ngrok-skip-browser-warning": "true",
+//       //     },
+//       //   }
 //     );
 
-//     console.log({apiResponse})
-
 //     if (!apiResponse.data.success) {
-//       return res.status(404).send("Post not found");
+//       return res.status(404).send("Article not found");
 //     }
 
-//     const post = apiResponse.data.post;
-//     const title = escapeHTML(post.title || "Untitled Post");
+//     const post = apiResponse?.data?.post;
+
+//     // Fallbacks + escape to avoid HTML breakage
+//     const title = escapeHTML(post?.title || "Untitled Post");
 //     const description = escapeHTML(
 //       post.description || "Read this article on Dehaat News."
 //     );
-//     const rawImageUrl =
+//     const imageUrl =
 //       post.imageUrl ||
 //       post.photos?.[0]?.url ||
-//       "https://news-app-cyan-ten.vercel.app/dehaatnews.png";
-//     const imageUrl = escapeHTML(rawImageUrl);
+//       "https://news-app-cyan-ten.vercel.app/dehaatnews.png"; // your fallback image
 
-//     // ✅ Read original index.html (DO NOT mutate it)
-//     const indexPath = path.join(process.cwd(), "dist", "index.html");
-//     fs.readFile(indexPath, "utf8", (err, htmlData) => {
-//       if (err) {
-//         console.error("Error reading index.html:", err);
-//         return res.status(500).send("Internal Server Error");
-//       }
+//     const ogMetaTags = `
+//         <!DOCTYPE html>
+//         <html lang="en">
+//         <head>
+//             <meta charset="UTF-8">
+//             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//             <title>${title} - Dehaat News</title>
 
-//       // ✅ Inject dynamic OG meta tags
-//       const modifiedHtml = htmlData.replace(
-//         "</head>",
-//         `
-//                 <!-- Injected OG Meta Tags -->
-//                 <meta property="og:title" content="${title}" />
-//                 <meta property="og:description" content="${description}" />
-//                 <meta property="og:image" content="${imageUrl}" />
-//                 <meta property="og:image:secure_url" content="${imageUrl}" />
-//                 <meta property="og:image:width" content="1200" />
-//                 <meta property="og:image:height" content="630" />
-//                 <meta property="og:type" content="article" />
-//                 <meta property="og:url" content="https://news-app-cyan-ten.vercel.app/viewfull/${id}" />
+//             <!-- Open Graph Tags -->
+//             <meta property="og:title" content="${title}" />
+//             <meta property="og:description" content="${description}" />
+//             <meta property="og:image" content="${imageUrl}" />
+//             <meta property="og:image:secure_url" content="${imageUrl}" />
+//             <meta property="og:image:width" content="1200" />
+//             <meta property="og:image:height" content="630" />
+//             <meta property="og:type" content="article" />
+//             <meta property="og:url" content="https://news-app-cyan-ten.vercel.app/viewfull/${id}" />
 
-//                 <meta name="twitter:card" content="summary_large_image" />
-//                 <meta name="twitter:title" content="${title}" />
-//                 <meta name="twitter:description" content="${description}" />
-//                 <meta name="twitter:image" content="${imageUrl}" />
+//             <!-- Twitter -->
+//             <meta name="twitter:card" content="summary_large_image" />
+//             <meta name="twitter:title" content="${title}" />
+//             <meta name="twitter:description" content="${description}" />
+//             <meta name="twitter:image" content="${imageUrl}" />
 
-//                 <meta http-equiv="refresh" content="2;url=https://news-app-cyan-ten.vercel.app/news/${id}" />
-//                 </head>`
-//       );
+//             <!-- Redirect to frontend after preview -->
+//             <script>
+//                 window.location.href = "https://news-app-cyan-ten.vercel.app/news/${id}";
+//             </script>
+//         </head>
+//         <body></body>
+//         </html>
+//         `;
 
-//       res.send(modifiedHtml);
-//     });
+//     res.send(ogMetaTags);
 //   } catch (error) {
 //     console.error("Error in /viewfull/:id:", error.message);
 //     res.status(500).send("Server Error");
 //   }
 // });
+
+app.get("/viewfull/:id", async (req, res) => {
+  try {
+    // const { id } = req.params;
+
+    // ✅ Use your backend API, not CLIENT_URL
+    const apiResponse = await axios.get(
+      `${'https://news-app-backend-production.up.railway.app'}/api/v1/posts/${'6836ee28071f223f25d6331c'}`
+    );
+
+    console.log({apiResponse})
+
+    if (!apiResponse.data.success) {
+      return res.status(404).send("Post not found");
+    }
+
+    const post = apiResponse.data.post;
+    const title = escapeHTML(post.title || "Untitled Post");
+    const description = escapeHTML(
+      post.description || "Read this article on Dehaat News."
+    );
+    const rawImageUrl =
+      post.imageUrl ||
+      post.photos?.[0]?.url ||
+      "https://news-app-cyan-ten.vercel.app/dehaatnews.png";
+    const imageUrl = escapeHTML(rawImageUrl);
+
+    // ✅ Read original index.html (DO NOT mutate it)
+    const indexPath = path.join(process.cwd(), "dist", "index.html");
+    fs.readFile(indexPath, "utf8", (err, htmlData) => {
+      if (err) {
+        console.error("Error reading index.html:", err);
+        return res.status(500).send("Internal Server Error");
+      }
+
+      // ✅ Inject dynamic OG meta tags
+      const modifiedHtml = htmlData.replace(
+        "</head>",
+        `
+                <!-- Injected OG Meta Tags -->
+                <meta property="og:title" content="${title}" />
+                <meta property="og:description" content="${description}" />
+                <meta property="og:image" content="${imageUrl}" />
+                <meta property="og:image:secure_url" content="${imageUrl}" />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta property="og:type" content="article" />
+                <meta property="og:url" content="https://news-app-cyan-ten.vercel.app/viewfull/${id}" />
+
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content="${title}" />
+                <meta name="twitter:description" content="${description}" />
+                <meta name="twitter:image" content="${imageUrl}" />
+
+                <meta http-equiv="refresh" content="2;url=https://news-app-cyan-ten.vercel.app/news/${id}" />
+                </head>`
+      );
+
+      res.send(modifiedHtml);
+    });
+  } catch (error) {
+    console.error("Error in /viewfull/:id:", error.message);
+    res.status(500).send("Server Error");
+  }
+});
 
 // Escape HTML for safe meta output
 function escapeHTML(str) {
