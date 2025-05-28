@@ -132,6 +132,7 @@ app.get("/viewfull/:id", async (req, res) => {
   try {
     // const { id } = req.params;
 
+     const { id } = req.params; // ✅ This line is missing in your code
     // ✅ Use your backend API, not CLIENT_URL
     const apiResponse = await axios.get(
       `${"https://news-app-backend-production.up.railway.app"}/api/v1/posts/${"6836ee28071f223f25d6331c"}`
