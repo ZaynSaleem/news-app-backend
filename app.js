@@ -5,31 +5,28 @@ import { connectToMongoDB, hashPassword } from "./src/utils/features.js";
 import userRoute from "./src/routes/admin.js";
 import postsRoute from "./src/routes/post.js";
 import sponsorsRoute from "./src/routes/sponsor.js";
-import ImageKit from "imagekit";
+// import ImageKit from "imagekit";
 import morgan from "morgan";
 import NodeCache from "node-cache";
 import axios from "axios";
-import { fileURLToPath } from "url";
-// import path from "path";
-// import fs from "fs/promises";
-import fetch from "node-fetch";
-import path from "path";
+// const path = require("path");
+// const fs = require("fs");
 import fs from "fs";
-
-// ES Modules fix for __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import path from "path";
 
 dotenv.config({ path: "./.env" });
 
 const app = express();
+
 const PORT = process.env.PORT;
 export let AdminPassKey;
+
 export const jwtSecret = process.env.JWT_SECRET;
 export const TTL = process.env.TIME_TO_LIVE;
 export const envMode = process.env.NODE_ENV || "PRODUCTION";
 const mongoUri = process.env.MONGO_URI;
 export const myCache = new NodeCache();
+
 console.log("CLIENT_URL:", process.env.CLIENT_URL);
 
 // Setup CORS
@@ -38,9 +35,6 @@ const corsOptions = {
     "http://localhost:5173",
     "http://localhost:4173",
     "https://news-app-cyan-ten.vercel.app",
-    "https://mallard-bold-factually.ngrok-free.app",
-    "https://news-app-backend-production.up.railway.app"
-    // process.env.CLIENT_URL,
   ],
   credentials: true,
 };
@@ -48,34 +42,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(morgan("dev"));
 app.use(express.json());
-// app.use(
-//   express.static(path.resolve(__dirname, "../client/dist", "index.html"), {
-//     maxAge: "30 days",
-//     setHeaders: (res, path) => {
-//       if (express.static.mime.lookup(path) === "text/html") {
-//         // Skip cache on html to load new builds.
-//         res.setHeader("Cache-Control", "public, max-age=0");
-//       }
-//     },
-//   })
-// );
 
-app.use(express.static(path.join(__dirname, './dist')))
-// ++
-app.get(/^(?!\/api).\*/, (req, res) => {
-    res.sendFile(path.join(__dirname, './dist', 'index.html'))
-})
-
-// // Basic Route
-// app.get("/*", (req, res) => {
-//   // res.send("Hello World");
-//   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
-// });
-
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
-// });
-
+// Basic Route
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 
 // Initialize ImageKit
 // export const imagekit = new ImageKit({
@@ -85,121 +56,154 @@ app.get(/^(?!\/api).\*/, (req, res) => {
 // });
 
 // 🔹 Open Graph Meta Route for Social Sharing
+// app.get("/viewfull/:id", async (req, res) => {
+//   try {
+//     const id = "6836ee28071f223f25d6331c";
+//     // const { id } = req.params;
+
+//     const apiResponse = await axios.get(
+//       `${"https://moody-taxes-beg.loca.lt"}/api/v1/posts/${"6836ee28071f223f25d6331c"}`
+//       //   {
+//       //     headers: {
+//       //       "ngrok-skip-browser-warning": "true",
+//       //     },
+//       //   }
+//     );
+
+//     if (!apiResponse.data.success) {
+//       return res.status(404).send("Article not found");
+//     }
+
+//     const post = apiResponse?.data?.post;
+
+//     // Fallbacks + escape to avoid HTML breakage
+//     const title = escapeHTML(post?.title || "Untitled Post");
+//     const description = escapeHTML(
+//       post.description || "Read this article on Dehaat News."
+//     );
+//     const imageUrl =
+//       post.imageUrl ||
+//       post.photos?.[0]?.url ||
+//       "https://news-app-cyan-ten.vercel.app/dehaatnews.png"; // your fallback image
+
+//     const ogMetaTags = `
+//         <!DOCTYPE html>
+//         <html lang="en">
+//         <head>
+//             <meta charset="UTF-8">
+//             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//             <title>${title} - Dehaat News</title>
+
+//             <!-- Open Graph Tags -->
+//             <meta property="og:title" content="${title}" />
+//             <meta property="og:description" content="${description}" />
+//             <meta property="og:image" content="${imageUrl}" />
+//             <meta property="og:image:secure_url" content="${imageUrl}" />
+//             <meta property="og:image:width" content="1200" />
+//             <meta property="og:image:height" content="630" />
+//             <meta property="og:type" content="article" />
+//             <meta property="og:url" content="https://news-app-cyan-ten.vercel.app/viewfull/${id}" />
+
+//             <!-- Twitter -->
+//             <meta name="twitter:card" content="summary_large_image" />
+//             <meta name="twitter:title" content="${title}" />
+//             <meta name="twitter:description" content="${description}" />
+//             <meta name="twitter:image" content="${imageUrl}" />
+
+//             <!-- Redirect to frontend after preview -->
+//             <script>
+//                 window.location.href = "https://news-app-cyan-ten.vercel.app/news/${id}";
+//             </script>
+//         </head>
+//         <body></body>
+//         </html>
+//         `;
+
+//     res.send(ogMetaTags);
+//   } catch (error) {
+//     console.error("Error in /viewfull/:id:", error.message);
+//     res.status(500).send("Server Error");
+//   }
+// });
+
 app.get("/viewfull/:id", async (req, res) => {
-  const indexPath = path.join(__dirname, "./dist", "index.html");
-// const indexPath = path.resolve(__dirname, "..", "dist", "index.html");
+  try {
+    // const { id } = req.params;
 
-  fs.readFile(indexPath, "utf8", (err, htmlData) => {
-    if (err) {
-      console.error("Error during file reading", err);
-      return res.status(404).end();
+    const { id } = req.params; // ✅ This line is missing in your code
+    // ✅ Use your backend API, not CLIENT_URL
+    const apiResponse = await axios.get(
+      `${"https://news-app-backend-production.up.railway.app"}/api/v1/posts/${"6836ee28071f223f25d6331c"}`
+    );
+
+    console.log({ apiResponse });
+
+    if (!apiResponse.data.success) {
+      return res.status(404).send("Post not found");
     }
-    let fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
-    console.log(fullUrl);
 
-    const { id } = req?.params;
+    const post = apiResponse?.data?.post;
+    const title = escapeHTML(post?.title || "Untitled Post");
+    const description = escapeHTML(
+      post?.description || "Read this article on Dehaat News."
+    );
+    const rawImageUrl =
+      post.imageUrl ||
+      post.photos?.[0]?.url ||
+      "https://news-app-cyan-ten.vercel.app/dehaatnews.png";
+    const imageUrl = escapeHTML(rawImageUrl);
+    const pageUrl = `https://news-app-cyan-ten.vercel.app/viewfull/${id}`;
 
+    // const indexPath = path.join(process.cwd(), "dist", "index.html");
+    // fs.readFile(indexPath, "utf8", (err, htmlData) => {
+    //   if (err) {
+    //     console.error("Error reading index.html:", err);
+    //     return res.status(500).send("Internal Server Error");
+    //   }
 
-    return fetch(
-      `${"https://news-app-backend-production.up.railway.app"}/api/v1/posts/${id}`
-    )
-      .then((response) =>
-        response.json().then((data) => {
-          console.log({ data });
-          const post = data?.post;
+    //   // ✅ Replace placeholders
+    //   let modifiedHtml = htmlData
+    //     .replace(/__META_TITLE__/g, title)
+    //     .replace(/__META_DESCRIPTION__/g, description)
+    //     .replace(/__META_IMAGE__/g, imageUrl)
+    //     .replace(/__META_URL__/g, pageUrl);
 
-          // const title = escapeHTML(post?.title || "Untitled Post");
-          const title = post?.title
-          const description = escapeHTML(
-            post.description || "Read this article on Dehaat News."
-          );
-          const rawImageUrl =
-            post.imageUrl ||
-            post.photos?.[0]?.url ||
-            "https://news-app-cyan-ten.vercel.app/dehaatnews.png";
-          const imageUrl = escapeHTML(rawImageUrl);
+    //   // ✅ Optional: Redirect to full article after showing preview
+    //   modifiedHtml = modifiedHtml.replace(
+    //     "</head>",
+    //     `<meta http-equiv="refresh" content="2;url=https://news-app-cyan-ten.vercel.app/news/${id}" />\n</head>`
+    //   );
 
-          // inject meta tags
-          htmlData = htmlData
-            .replace(
-              /Dehaat News - Stay Updated/g,
-              title || "Dehaat News - Stay Updated"
-            )
-            .replace("__META_OG_URL__", fullUrl)
-            .replace(
-              /Stay updated with agricultural and global news./g,
-              description || "Stay updated with agricultural and global news."
-            )
-            .replace("__META_IMAGE__", imageUrl);
+    //   res.send(modifiedHtml);
+    // });
 
-          return res.send(htmlData);
-        })
-      )
-      .catch((err) => {
-        console.log({ err });
-        return res.send(htmlData);
-      });
-  });
-  // const { id } = req.params;
+    const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>${title}</title>
+        <meta name="description" content="${description}" />
+        <meta property="og:image" content="${imageUrl}" />
+        <!-- other meta tags -->
+      </head>
+      <body>
+        <div id="root"></div>
+        <script>
+          window.__PRELOADED_STATE__ = ${JSON.stringify(post)};
+        </script>
+        <script src="/static/js/main.js"></script>
+           <script>
+                window.location.href = "${pageUrl}";
+            </script>
+      </body>
+    </html>
+  `;
 
-  // const apiResponse = await axios.get(
-  //   `${process.env.CLIENT_URL}/api/v1/posts/${id}`
-  // );
-
-  // if (!apiResponse.data.success) {
-  //   return res.status(404).send("Article not found");
-  // }
-
-  // const post = apiResponse.data.post;
-
-  // // Fallbacks + escape to avoid HTML breakage
-  // const title = escapeHTML(post.title || "Untitled Post");
-  // const description = escapeHTML(
-  //   post.description || "Read this article on Dehaat News."
-  // );
-  // const imageUrl =
-  //   post.imageUrl ||
-  //   post.photos?.[0]?.url ||
-  //   "https://dehaatnews.com/dehaatnews.png"; // your fallback image
-
-  // const ogMetaTags = `
-  //       <!DOCTYPE html>
-  //       <html lang="en">
-  //       <head>
-  //           <meta charset="UTF-8">
-  //           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  //           <title>${title} - Dehaat News</title>
-
-  //           <!-- Open Graph Tags -->
-  //           <meta property="og:title" content="${title}" />
-  //           <meta property="og:description" content="${description}" />
-  //           <meta property="og:image" content="${imageUrl}" />
-  //           <meta property="og:image:secure_url" content="${imageUrl}" />
-  //           <meta property="og:image:width" content="1200" />
-  //           <meta property="og:image:height" content="630" />
-  //           <meta property="og:type" content="article" />
-  //           <meta property="og:url" content="https://dehaatnews.com/viewfull/${id}" />
-
-  //           <!-- Twitter -->
-  //           <meta name="twitter:card" content="summary_large_image" />
-  //           <meta name="twitter:title" content="${title}" />
-  //           <meta name="twitter:description" content="${description}" />
-  //           <meta name="twitter:image" content="${imageUrl}" />
-
-  //           <!-- Redirect to frontend after preview -->
-  //           <script>
-  //               window.location.href = "https://dehaatnews.com/news/${id}";
-  //           </script>
-  //       </head>
-  //       <body></body>
-  //       </html>
-  //       `;
-
-  // res.send(ogMetaTags);
-  // // } catch (error) {
-  // //   console.error("Error in /viewfull/:id:", error.message);
-  // //   res.status(500).send("Server Error");
-  // // }
+    res.send(html);
+  } catch (error) {
+    console.error("Error in /viewfull/:id:", error.message);
+    res.status(500).send("Server Error");
+  }
 });
 
 // Escape HTML for safe meta output
