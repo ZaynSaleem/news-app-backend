@@ -36,6 +36,8 @@ const corsOptions = {
     "http://localhost:4173",
     process.env.CLIENT_URL,
     process.env.SERVER_URL,
+    "https://news-app-cyan-ten.vercel.app",
+    "https://news-app-backend-production.up.railway.app"
   ],
   credentials: true,
 };
