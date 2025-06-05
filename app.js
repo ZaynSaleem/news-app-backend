@@ -50,11 +50,11 @@ app.get("/", (req, res) => {
 });
 
 // Initialize ImageKit
-export const imagekit = new ImageKit({
-  publicKey: process.env.PUBLIC_KEY,
-  privateKey: process.env.PRIVATE_KEY,
-  urlEndpoint: process.env.URL_ENDPOINT,
-});
+// export const imagekit = new ImageKit({
+//   publicKey: process.env.PUBLIC_KEY,
+//   privateKey: process.env.PRIVATE_KEY,
+//   urlEndpoint: process.env.URL_ENDPOINT,
+// });
 
 app.get("/viewfull/:id", async (req, res) => {
   try {
@@ -80,7 +80,7 @@ app.get("/viewfull/:id", async (req, res) => {
       post.imageUrl ||
       post.photos?.[0]?.url ||
       `${process.env.CLIENT_URL}/dehaatnews.png`;
-    const imageUrl = escapeHTML(rawImageUrl);
+    // const imageUrl = escapeHTML(rawImageUrl);
     const pageUrl = `${process.env.CLIENT_URL}/viewfull/${id}`;
 
     const html = `
@@ -89,7 +89,7 @@ app.get("/viewfull/:id", async (req, res) => {
       <head>
         <title>${title}</title>
         <meta name="description" content="${description}" />
-        <meta property="og:image" content="${imageUrl}" />
+        <meta property="og:image" content="${rawImageUrl}" />
         <!-- other meta tags -->
       </head>
       <body>
